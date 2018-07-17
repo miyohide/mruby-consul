@@ -12,7 +12,7 @@ class Consul
     # args: key / value
     #
     def get(key, args={})
-      @http.get(make_url(key))
+      @http.get(make_url(key, args))
     end
 
     def put(key, value, args={})
@@ -24,10 +24,13 @@ class Consul
     end
 
     private
-    def make_url(key)
+    def make_url(key, args)
       ret = @url + key
-      ret << "?raw" unless @disable_raw
-      ret
+      query = @disable_raw ? "?" : "?raw&"
+      args.each do |k, v|
+        query << "#{k}=#{v}&"
+      end
+      ret << query.chop
     end
   end
 end
